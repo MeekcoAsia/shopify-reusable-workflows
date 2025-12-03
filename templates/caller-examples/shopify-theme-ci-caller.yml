@@ -1,7 +1,6 @@
 # Example: How to use the reusable Shopify Theme CI/CD workflow in your repo
 #
 # Place this file in: .github/workflows/shopify-theme-ci.yml
-# Replace YOUR_ORG with your GitHub organization name
 
 name: Shopify Theme CI/CD
 
@@ -21,7 +20,7 @@ permissions:
 
 jobs:
   shopify-ci:
-    uses: YOUR_ORG/shopify-reusable-workflows/.github/workflows/shopify-theme-ci.yml@main
+    uses: MeekcoAsia/shopify-reusable-workflows/.github/workflows/shopify-theme-ci.yml@main
 
     # Optional: Customize versions and features (these are the defaults)
     # with:

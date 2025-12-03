@@ -11,10 +11,8 @@ cd my-new-store
 
 ### 2. Run one-line setup
 ```bash
-ORG_NAME=your-org-name curl -sSL https://raw.githubusercontent.com/your-org-name/shopify-reusable-workflows/main/setup.sh | bash
+ORG_NAME=MeekcoAsia curl -sSL https://raw.githubusercontent.com/MeekcoAsia/shopify-reusable-workflows/main/setup.sh | bash
 ```
-
-Replace `your-org-name` with your GitHub organization name.
 
 ### 3. Commit and push
 ```bash
@@ -61,8 +59,8 @@ Use these branch prefixes for auto-labeling:
 
 Download Makefile to your store repo:
 ```bash
-curl -sSL https://raw.githubusercontent.com/your-org-name/shopify-reusable-workflows/main/templates/Makefile -o Makefile
-make setup ORG_NAME=your-org-name
+curl -sSL https://raw.githubusercontent.com/MeekcoAsia/shopify-reusable-workflows/main/templates/Makefile -o Makefile
+make setup ORG_NAME=MeekcoAsia
 make commit-workflows
 git push
 ```
@@ -82,7 +80,7 @@ Update workflows for ALL stores:
 To update a single store:
 ```bash
 cd my-store
-ORG_NAME=your-org-name curl -sSL https://raw.githubusercontent.com/your-org-name/shopify-reusable-workflows/main/setup.sh | bash
+ORG_NAME=MeekcoAsia curl -sSL https://raw.githubusercontent.com/MeekcoAsia/shopify-reusable-workflows/main/setup.sh | bash
 git add .github/
 git commit -m "Update workflows"
 git push
@@ -106,12 +104,12 @@ Run "Label Management" workflow in Actions tab to sync labels after setup.
 
 **Workflows not running?**
 - Check `.github/workflows/` files are pushed to your store repo
-- Verify `YOUR_ORG` is replaced with actual org name in workflow files
+- Verify `MeekcoAsia` is set correctly in workflow files
 
 **"ready to main" check failing?**
 - Run "Label Management" workflow in Actions tab first
 - PM must manually add "ready to main" label to approve PR
 
 **Setup script fails?**
-- Verify `ORG_NAME=your-org` is set correctly
-- Check central repo is accessible: `https://github.com/your-org/shopify-reusable-workflows`
+- Verify `ORG_NAME=MeekcoAsia` is set correctly
+- Check central repo is accessible: `https://github.com/MeekcoAsia/shopify-reusable-workflows`

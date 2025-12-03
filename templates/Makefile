@@ -1,7 +1,6 @@
 # Shopify CI/CD Makefile
-# Replace YOUR_ORG with your GitHub organization name
 
-ORG_NAME ?= YOUR_ORG
+ORG_NAME ?= MeekcoAsia
 REPO_NAME ?= shopify-reusable-workflows
 BRANCH ?= main
 
@@ -20,11 +19,6 @@ help: ## Show this help message
 
 setup: ## Set up GitHub Actions workflows (complete setup)
 	@echo "Setting up Shopify CI/CD workflows..."
-	@if [ "$(ORG_NAME)" = "YOUR_ORG" ]; then \
-		echo "Error: Please set ORG_NAME in the Makefile or run:"; \
-		echo "  make setup ORG_NAME=your-org-name"; \
-		exit 1; \
-	fi
 	@mkdir -p .github/workflows
 	@echo "Downloading workflows from $(ORG_NAME)/$(REPO_NAME)..."
 	@curl -sSL "https://raw.githubusercontent.com/$(ORG_NAME)/$(REPO_NAME)/$(BRANCH)/templates/caller-examples/label-sync-caller.yml" -o .github/workflows/label-sync.yml

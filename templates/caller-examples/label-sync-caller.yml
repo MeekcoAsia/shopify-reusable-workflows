@@ -1,7 +1,6 @@
 # Example: How to use the reusable label-sync workflow in your repo
 #
 # Place this file in: .github/workflows/label-sync.yml
-# Replace YOUR_ORG with your GitHub organization name
 
 name: Label Management
 
@@ -15,7 +14,7 @@ on:
 
 jobs:
   sync-labels:
-    uses: YOUR_ORG/shopify-reusable-workflows/.github/workflows/label-sync.yml@main
+    uses: MeekcoAsia/shopify-reusable-workflows/.github/workflows/label-sync.yml@main
     # Optional inputs (these are the defaults):
     # with:
     #   config-file: '.github/labels.yml'

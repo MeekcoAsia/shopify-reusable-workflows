@@ -5,10 +5,8 @@ Set up a new Shopify store repository with CI/CD workflows in one command!
 ## Option 1: Using curl (Fastest)
 
 ```bash
-ORG_NAME=your-org-name curl -sSL https://raw.githubusercontent.com/your-org-name/shopify-reusable-workflows/main/setup.sh | bash
+ORG_NAME=MeekcoAsia curl -sSL https://raw.githubusercontent.com/MeekcoAsia/shopify-reusable-workflows/main/setup.sh | bash
 ```
-
-Replace `your-org-name` with your GitHub organization name.
 
 ## Option 2: Using Makefile (Most Flexible)
 
@@ -16,12 +14,12 @@ Replace `your-org-name` with your GitHub organization name.
 
 1. Download the Makefile to your Shopify repo:
 ```bash
-curl -sSL https://raw.githubusercontent.com/your-org-name/shopify-reusable-workflows/main/templates/Makefile -o Makefile
+curl -sSL https://raw.githubusercontent.com/MeekcoAsia/shopify-reusable-workflows/main/templates/Makefile -o Makefile
 ```
 
-2. Edit the Makefile and replace `YOUR_ORG` with your organization name, or:
+2. Run setup:
 ```bash
-make setup ORG_NAME=your-org-name
+make setup ORG_NAME=MeekcoAsia
 ```
 
 ### After Makefile is set up:
@@ -77,7 +75,7 @@ To update workflows to the latest version:
 
 ### Using curl:
 ```bash
-ORG_NAME=your-org-name curl -sSL https://raw.githubusercontent.com/your-org-name/shopify-reusable-workflows/main/setup.sh | bash
+ORG_NAME=MeekcoAsia curl -sSL https://raw.githubusercontent.com/MeekcoAsia/shopify-reusable-workflows/main/setup.sh | bash
 ```
 
 ### Using Makefile:
@@ -92,7 +90,7 @@ make update
 cd my-shopify-store
 
 # One-line setup
-ORG_NAME=mycompany curl -sSL https://raw.githubusercontent.com/mycompany/shopify-reusable-workflows/main/setup.sh | bash
+ORG_NAME=MeekcoAsia curl -sSL https://raw.githubusercontent.com/MeekcoAsia/shopify-reusable-workflows/main/setup.sh | bash
 
 # Commit and push
 git add .github/
@@ -107,7 +105,7 @@ git push
 ### "ORG_NAME is not set"
 Make sure to set the `ORG_NAME` environment variable:
 ```bash
-ORG_NAME=your-org-name curl -sSL https://...
+ORG_NAME=MeekcoAsia curl -sSL https://...
 ```
 
 ### "Failed to download"
