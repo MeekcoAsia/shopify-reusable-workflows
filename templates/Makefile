@@ -3,8 +3,9 @@
 ORG_NAME ?= MeekcoAsia
 REPO_NAME ?= shopify-reusable-workflows
 BRANCH ?= main
+SHOPIFY_STORE ?= your-store.myshopify.com
 
-.PHONY: help setup setup-workflows setup-labels commit-workflows clean
+.PHONY: help setup setup-workflows setup-labels commit-workflows clean dev push pull
 
 help: ## Show this help message
 	@echo "Shopify CI/CD Workflow Management"
@@ -12,10 +13,11 @@ help: ## Show this help message
 	@echo "Available commands:"
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-20s\033[0m %s\n", $$1, $$2}'
 	@echo ""
-	@echo "Usage:"
-	@echo "  make setup              # Initial setup (downloads all files)"
-	@echo "  make commit-workflows   # Commit and push workflow files"
-	@echo "  make clean              # Remove workflow files"
+	@echo "Configuration:"
+	@echo "  SHOPIFY_STORE=$(SHOPIFY_STORE)"
+	@echo ""
+	@echo "Note: Set SHOPIFY_STORE in this Makefile or override when running:"
+	@echo "  make dev SHOPIFY_STORE=your-store.myshopify.com"
 
 setup: ## Set up GitHub Actions workflows (complete setup)
 	@echo "Downloading setup script..."
@@ -79,3 +81,27 @@ update: ## Update workflows and config to latest version
 	@echo "Review changes and commit if needed:"
 	@echo "  git diff"
 	@echo "  make commit-workflows"
+
+dev: ## Start Shopify theme dev server
+	@if [ "$(SHOPIFY_STORE)" = "your-store.myshopify.com" ]; then \
+		echo "Error: Please set SHOPIFY_STORE in Makefile or run:"; \
+		echo "  make dev SHOPIFY_STORE=your-store.myshopify.com"; \
+		exit 1; \
+	fi
+	shopify theme dev --store $(SHOPIFY_STORE)
+
+push: ## Push theme to Shopify store
+	@if [ "$(SHOPIFY_STORE)" = "your-store.myshopify.com" ]; then \
+		echo "Error: Please set SHOPIFY_STORE in Makefile or run:"; \
+		echo "  make push SHOPIFY_STORE=your-store.myshopify.com"; \
+		exit 1; \
+	fi
+	shopify theme push --store $(SHOPIFY_STORE)
+
+pull: ## Pull theme from Shopify store
+	@if [ "$(SHOPIFY_STORE)" = "your-store.myshopify.com" ]; then \
+		echo "Error: Please set SHOPIFY_STORE in Makefile or run:"; \
+		echo "  make pull SHOPIFY_STORE=your-store.myshopify.com"; \
+		exit 1; \
+	fi
+	shopify theme pull --store $(SHOPIFY_STORE)
