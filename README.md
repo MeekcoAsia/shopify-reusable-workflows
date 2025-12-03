@@ -1,6 +1,6 @@
 # Shopify Reusable Workflows
 
-Centralized GitHub Actions workflows for Shopify stores. Set up CI/CD in any new store repo with one command.
+Centralized GitHub Actions workflows for Shopify stores. Set up CI/CD in any new store repo with two commands.
 
 ## Setup New Store Repo (3 Steps)
 
@@ -9,9 +9,10 @@ Centralized GitHub Actions workflows for Shopify stores. Set up CI/CD in any new
 cd my-new-store
 ```
 
-### 2. Run one-line setup
+### 2. Run setup script
 ```bash
-ORG_NAME=MeekcoAsia curl -sSL https://raw.githubusercontent.com/MeekcoAsia/shopify-reusable-workflows/main/setup.sh | bash
+export ORG_NAME=MeekcoAsia
+curl -sSL https://raw.githubusercontent.com/MeekcoAsia/shopify-reusable-workflows/main/setup.sh | bash
 ```
 
 ### 3. Commit and push
@@ -78,7 +79,8 @@ Update workflows for ALL stores:
 To update a single store:
 ```bash
 cd my-store
-ORG_NAME=MeekcoAsia curl -sSL https://raw.githubusercontent.com/MeekcoAsia/shopify-reusable-workflows/main/setup.sh | bash
+export ORG_NAME=MeekcoAsia
+curl -sSL https://raw.githubusercontent.com/MeekcoAsia/shopify-reusable-workflows/main/setup.sh | bash
 git add .github/
 git commit -m "Update workflows"
 git push
