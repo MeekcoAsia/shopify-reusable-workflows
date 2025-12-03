@@ -2,34 +2,40 @@
 
 Centralized GitHub Actions workflows for Shopify stores. Set up CI/CD in any new store repo with two commands.
 
-## Setup New Store Repo (3 Steps)
+## Setup New Store Repo (2 Steps)
 
-### 1. Navigate to your new store repo
+### 1. Get the Makefile
 ```bash
 cd my-new-store
+curl -sSL https://raw.githubusercontent.com/MeekcoAsia/shopify-reusable-workflows/main/templates/Makefile -o Makefile
 ```
 
-### 2. Run setup script
+### 2. Run setup
 ```bash
+make setup
+make commit-workflows
+git push
+```
+
+That's it! The setup script will prompt you for the organization name and auto-detect your default branch.
+
+---
+
+## Alternative: One-Line Setup
+
+If you don't want to use Makefile:
+
+```bash
+export ORG_NAME=MeekcoAsia
 curl -sSL https://raw.githubusercontent.com/MeekcoAsia/shopify-reusable-workflows/main/setup.sh | bash
-```
-
-The script will prompt you to:
-- Enter your GitHub organization name (e.g., MeekcoAsia)
-- Confirm the detected default branch name (or specify a different one)
-
-### 3. Commit and push
-```bash
 git add .github/ .theme-check.yml
 git commit -m "Add Shopify CI/CD workflows"
 git push
 ```
 
-**Done!** Your repo now has automated CI/CD workflows.
-
 ---
 
-## What This Does
+## What Gets Installed
 
 Creates 4 files in your store repo:
 - `.github/workflows/label-sync.yml` - Syncs PR labels
@@ -60,19 +66,6 @@ Use these branch prefixes for auto-labeling:
 - `feature/45-add-hero` → labeled "feature"
 - `fix/67-checkout-bug` → labeled "bug"
 
----
-
-## Alternative: Makefile Setup
-
-Download Makefile to your store repo:
-```bash
-curl -sSL https://raw.githubusercontent.com/MeekcoAsia/shopify-reusable-workflows/main/templates/Makefile -o Makefile
-make setup ORG_NAME=MeekcoAsia
-make commit-workflows
-git push
-```
-
----
 
 ## Updating Workflows
 
