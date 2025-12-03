@@ -1,0 +1,12 @@
+# Theme Check Configuration
+# Start with recommended settings from Shopify
+extends: theme-check:recommended
+
+# Disable checks that create noise on Dawn theme defaults
+LiquidTag:
+  enabled: false
+  # Suggests using {% liquid %} blocks - Dawn doesn't follow this pattern
+
+NestedSnippet:
+  enabled: false
+  # Dawn theme has nested snippets by design

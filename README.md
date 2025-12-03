@@ -11,13 +11,16 @@ cd my-new-store
 
 ### 2. Run setup script
 ```bash
-export ORG_NAME=MeekcoAsia
 curl -sSL https://raw.githubusercontent.com/MeekcoAsia/shopify-reusable-workflows/main/setup.sh | bash
 ```
 
+The script will prompt you to:
+- Enter your GitHub organization name (e.g., MeekcoAsia)
+- Confirm the detected default branch name (or specify a different one)
+
 ### 3. Commit and push
 ```bash
-git add .github/
+git add .github/ .theme-check.yml
 git commit -m "Add Shopify CI/CD workflows"
 git push
 ```
@@ -28,10 +31,13 @@ git push
 
 ## What This Does
 
-Creates 3 files in your store repo:
+Creates 4 files in your store repo:
 - `.github/workflows/label-sync.yml` - Syncs PR labels
 - `.github/workflows/shopify-theme-ci.yml` - Runs checks on PRs
 - `.github/labels.yml` - Label configuration
+- `.theme-check.yml` - Theme Check configuration (disables noisy checks for Dawn theme)
+
+**Works with any default branch name** - automatically detects main, master, develop, or custom branch names.
 
 ### PR Workflow
 
@@ -79,11 +85,16 @@ Update workflows for ALL stores:
 To update a single store:
 ```bash
 cd my-store
-export ORG_NAME=MeekcoAsia
 curl -sSL https://raw.githubusercontent.com/MeekcoAsia/shopify-reusable-workflows/main/setup.sh | bash
-git add .github/
+git add .github/ .theme-check.yml
 git commit -m "Update workflows"
 git push
+```
+
+Or skip prompts by setting environment variables:
+```bash
+export ORG_NAME=MeekcoAsia
+curl -sSL https://raw.githubusercontent.com/MeekcoAsia/shopify-reusable-workflows/main/setup.sh | bash
 ```
 
 ---
@@ -111,5 +122,6 @@ Run "Label Management" workflow in Actions tab to sync labels after setup.
 - PM must manually add "ready to main" label to approve PR
 
 **Setup script fails?**
-- Verify `ORG_NAME=MeekcoAsia` is set correctly
+- Ensure you entered the correct organization name when prompted
 - Check central repo is accessible: `https://github.com/MeekcoAsia/shopify-reusable-workflows`
+- If running non-interactively, set `ORG_NAME` environment variable
