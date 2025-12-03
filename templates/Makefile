@@ -32,10 +32,17 @@ setup-workflows: ## Download only workflow files (without labels)
 	@mkdir -p .github/workflows
 	@curl -sSL "https://raw.githubusercontent.com/$(ORG_NAME)/$(REPO_NAME)/$(BRANCH)/templates/caller-examples/label-sync-caller.yml" -o .github/workflows/label-sync.yml
 	@curl -sSL "https://raw.githubusercontent.com/$(ORG_NAME)/$(REPO_NAME)/$(BRANCH)/templates/caller-examples/shopify-theme-ci-caller.yml" -o .github/workflows/shopify-theme-ci.yml
+	@# Replace YOUR_ORG and main branch - use | delimiter to handle branches with /
 	@if [ "$$(uname)" = "Darwin" ]; then \
-		sed -i '' "s/YOUR_ORG/$(ORG_NAME)/g" .github/workflows/*.yml; \
+		sed -i '' "s|YOUR_ORG|$(ORG_NAME)|g" .github/workflows/label-sync.yml; \
+		sed -i '' "s|YOUR_ORG|$(ORG_NAME)|g" .github/workflows/shopify-theme-ci.yml; \
+		sed -i '' "s|- main|- main|g" .github/workflows/label-sync.yml; \
+		sed -i '' "s|- main|- main|g" .github/workflows/shopify-theme-ci.yml; \
 	else \
-		sed -i "s/YOUR_ORG/$(ORG_NAME)/g" .github/workflows/*.yml; \
+		sed -i "s|YOUR_ORG|$(ORG_NAME)|g" .github/workflows/label-sync.yml; \
+		sed -i "s|YOUR_ORG|$(ORG_NAME)|g" .github/workflows/shopify-theme-ci.yml; \
+		sed -i "s|- main|- main|g" .github/workflows/label-sync.yml; \
+		sed -i "s|- main|- main|g" .github/workflows/shopify-theme-ci.yml; \
 	fi
 	@echo "✓ Workflows downloaded"
 
@@ -61,8 +68,14 @@ clean: ## Remove workflow files
 	@rm -rf .theme-check.yml
 	@echo "✓ Cleaned up"
 
-update: ## Update workflows to latest version
-	@echo "Updating workflows to latest version..."
+update: ## Update workflows and config to latest version
+	@echo "Updating to latest version..."
 	@$(MAKE) setup-workflows
-	@echo "✓ Workflows updated!"
-	@echo "Review changes and commit if needed"
+	@$(MAKE) setup-labels
+	@echo "Downloading .theme-check.yml..."
+	@curl -sSL "https://raw.githubusercontent.com/$(ORG_NAME)/$(REPO_NAME)/$(BRANCH)/templates/.theme-check.yml" -o .theme-check.yml
+	@echo "✓ All files updated!"
+	@echo ""
+	@echo "Review changes and commit if needed:"
+	@echo "  git diff"
+	@echo "  make commit-workflows"

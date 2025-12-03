@@ -31,17 +31,8 @@ if [ -z "$ORG_NAME" ]; then
     fi
 fi
 
-# Detect default branch of current repo
-DETECTED_BRANCH=$(git symbolic-ref refs/remotes/origin/HEAD 2>/dev/null | sed 's@^refs/remotes/origin/@@')
-if [ -z "$DETECTED_BRANCH" ]; then
-    # Fallback: try to get current branch
-    DETECTED_BRANCH=$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "main")
-fi
-
-# Prompt for default branch confirmation
-echo -e "${BLUE}Detected default branch: ${GREEN}${DETECTED_BRANCH}${NC}"
-read -p "Press Enter to use '${DETECTED_BRANCH}' or type a different branch name: " BRANCH_INPUT </dev/tty
-DEFAULT_BRANCH=${BRANCH_INPUT:-$DETECTED_BRANCH}
+# Use main as default branch for all repos
+DEFAULT_BRANCH="main"
 
 BASE_URL="https://raw.githubusercontent.com/${ORG_NAME}/${REPO_NAME}/${BRANCH}"
 
