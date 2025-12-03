@@ -24,7 +24,7 @@ echo ""
 
 # Prompt for ORG_NAME if not set
 if [ -z "$ORG_NAME" ]; then
-    read -p "Enter your GitHub organization name (e.g., MeekcoAsia): " ORG_NAME
+    read -p "Enter your GitHub organization name (e.g., MeekcoAsia): " ORG_NAME </dev/tty
     if [ -z "$ORG_NAME" ]; then
         echo -e "${RED}Error: Organization name is required${NC}"
         exit 1
@@ -40,7 +40,7 @@ fi
 
 # Prompt for default branch confirmation
 echo -e "${BLUE}Detected default branch: ${GREEN}${DETECTED_BRANCH}${NC}"
-read -p "Press Enter to use '${DETECTED_BRANCH}' or type a different branch name: " BRANCH_INPUT
+read -p "Press Enter to use '${DETECTED_BRANCH}' or type a different branch name: " BRANCH_INPUT </dev/tty
 DEFAULT_BRANCH=${BRANCH_INPUT:-$DETECTED_BRANCH}
 
 BASE_URL="https://raw.githubusercontent.com/${ORG_NAME}/${REPO_NAME}/${BRANCH}"
