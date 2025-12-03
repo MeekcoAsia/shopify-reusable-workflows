@@ -1,8 +1,9 @@
-# Shopify CI/CD Makefile
+# Shopify Repo General Makefile
 
 ORG_NAME ?= MeekcoAsia
 REPO_NAME ?= shopify-reusable-workflows
 BRANCH ?= main
+# CHANGE THE SHOPIFY STORE DOMAIN
 SHOPIFY_STORE ?= your-store.myshopify.com
 
 .PHONY: help setup setup-workflows setup-labels commit-workflows clean dev push pull
