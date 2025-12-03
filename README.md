@@ -21,20 +21,6 @@ That's it! The setup script will prompt you for the organization name and auto-d
 
 ---
 
-## Alternative: One-Line Setup
-
-If you don't want to use Makefile:
-
-```bash
-export ORG_NAME=MeekcoAsia
-curl -sSL https://raw.githubusercontent.com/MeekcoAsia/shopify-reusable-workflows/main/setup.sh | bash
-git add .github/ .theme-check.yml
-git commit -m "Add Shopify CI/CD workflows"
-git push
-```
-
----
-
 ## What Gets Installed
 
 Creates 4 files in your store repo:
