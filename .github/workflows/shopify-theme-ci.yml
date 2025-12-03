@@ -1,0 +1,195 @@
+name: Reusable Shopify Theme CI/CD
+
+on:
+  workflow_call:
+    inputs:
+      node-version:
+        description: 'Node.js version to use'
+        required: false
+        type: string
+        default: '20'
+      ruby-version:
+        description: 'Ruby version to use for theme-check'
+        required: false
+        type: string
+        default: '3.1'
+      run-theme-check:
+        description: 'Enable Shopify Theme Check'
+        required: false
+        type: boolean
+        default: true
+      run-validation:
+        description: 'Enable theme file validation'
+        required: false
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
+
+jobs:
+  # Auto-label PR based on branch name
+  auto-label:
+    name: Auto Label PR
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request' && github.event.action == 'opened'
+
+    steps:
+      - name: Label PR based on branch type
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const branchName = context.payload.pull_request.head.ref;
+            const branchType = branchName.split('/')[0];
+            const labels = [];
+
+            // Add type label based on branch prefix
+            if (branchType === 'feature' || branchType === 'feat') {
+              labels.push('feature');
+            } else if (branchType === 'fix' || branchType === 'hotfix') {
+              labels.push('bug');
+            }
+
+            // Add labels to PR
+            if (labels.length > 0) {
+              await github.rest.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                labels: labels
+              });
+            }
+
+  # Validate theme files
+  validate:
+    name: Validate Theme Files
+    runs-on: ubuntu-latest
+    if: inputs.run-validation
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ inputs.node-version }}
+
+      - name: Validate JSON files
+        run: |
+          echo "Validating JSON files..."
+          find . -name "*.json" -not -path "./node_modules/*" -not -path "./.git/*" | while read file; do
+            echo "Checking $file"
+            # Strip C-style comments that Shopify uses in template JSON files
+            # Remove comment lines: /*, */, and lines starting with *
+            if ! grep -v "^ *\*" "$file" | grep -v "^/\*" | grep -v "^ \*/" | python3 -m json.tool > /dev/null 2>&1; then
+              echo "Error: Invalid JSON in $file"
+              exit 1
+            fi
+          done
+          echo "All JSON files are valid!"
+
+      - name: Check for Liquid syntax errors
+        run: |
+          echo "Checking Liquid template structure..."
+          # Basic check for common Liquid syntax issues
+          if grep -r "{% \{" templates/ sections/ snippets/ layout/ 2>/dev/null; then
+            echo "Warning: Found potential Liquid syntax issues with extra braces"
+          fi
+          echo "Basic Liquid syntax check completed"
+
+  # Shopify Theme Check
+  theme-check:
+    name: Shopify Theme Check
+    runs-on: ubuntu-latest
+    if: inputs.run-theme-check
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ inputs.ruby-version }}
+          bundler-cache: false
+
+      - name: Install Theme Check
+        run: gem install theme-check
+
+      - name: Run Theme Check
+        run: theme-check .
+
+  # Auto-add "ready to test" label when PR is opened
+  add-ready-to-test:
+    name: Add Ready to Test Label
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request' && github.event.action == 'opened'
+    needs: [validate, theme-check]
+
+    steps:
+      - name: Add "Ready to Test" label
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            await github.rest.issues.addLabels({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              labels: ['ready to test']
+            });
+
+      - name: Comment PR with info
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const branchName = context.payload.pull_request.head.ref;
+            const branchType = branchName.split('/')[0];
+            const issueNumber = branchName.match(/\/(\d+)-/)?.[1] || 'N/A';
+
+            let body = `**PR is ready for testing**\n\n`;
+            body += `**Branch:** \`${branchName}\`\n`;
+            body += `**Type:** \`${branchType}\`\n`;
+            if (issueNumber !== 'N/A') {
+              body += `**Linked Issue:** #${issueNumber}\n`;
+            }
+            body += `\n---\n`;
+            body += `**Next Steps:**\n`;
+            body += `1. Validation and theme check passed\n`;
+            body += `2. Shopify preview theme is auto-synced with this branch\n`;
+            body += `3. PM: Test on the Shopify preview theme connected to this branch\n`;
+            body += `   (Preview theme link should be in the PR description)\n`;
+            body += `4. PM: Add "ready to main" label when approved\n`;
+            body += `5. Merge to main will auto-deploy to production via Shopify GitHub integration`;
+
+            await github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: body
+            });
+
+  # Enforce "ready to main" label before allowing merge
+  check-ready-to-main:
+    name: Check Ready to Main Label
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+
+    steps:
+      - name: Verify PM approval via label
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const labels = context.payload.pull_request.labels.map(l => l.name);
+
+            if (!labels.includes('ready to main')) {
+              core.setFailed('❌ This PR requires PM approval. PM must add the "ready to main" label before merging.');
+            } else {
+              core.info('✅ PM has approved this PR - ready to merge!');
+            }

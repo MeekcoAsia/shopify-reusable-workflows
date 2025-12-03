@@ -1,0 +1,17 @@
+# Workflow Labels
+- name: "ready to test"
+  color: "0E8A16"
+  description: "Dev has completed work and deployed to preview - ready for PM testing"
+
+- name: "ready to main"
+  color: "1D76DB"
+  description: "PM has tested and approved - ready to merge to main"
+
+# Type Labels (Auto-applied based on branch name)
+- name: "feature"
+  color: "a2eeef"
+  description: "New feature or enhancement"
+
+- name: "bug"
+  color: "d73a4a"
+  description: "Bug fix or hotfix"

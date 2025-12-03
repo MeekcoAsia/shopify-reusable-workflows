@@ -1,0 +1,31 @@
+name: Reusable Label Sync
+
+on:
+  workflow_call:
+    inputs:
+      config-file:
+        description: 'Path to labels configuration file'
+        required: false
+        type: string
+        default: '.github/labels.yml'
+      delete-other-labels:
+        description: 'Delete labels not in config file'
+        required: false
+        type: boolean
+        default: false
+
+jobs:
+  sync-labels:
+    name: Sync Repository Labels
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Sync labels
+        uses: EndBug/label-sync@v2
+        with:
+          config-file: ${{ inputs.config-file }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          delete-other-labels: ${{ inputs.delete-other-labels }}
