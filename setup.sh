@@ -61,12 +61,13 @@ echo -e "${GREEN}✓${NC} Created .github/workflows/"
 echo -e "${YELLOW}[2/5]${NC} Downloading label-sync workflow..."
 if curl -sSL "${BASE_URL}/templates/caller-examples/label-sync-caller.yml" -o .github/workflows/label-sync.yml; then
     # Replace YOUR_ORG with actual org name and main with default branch
+    # Use | as delimiter to handle branch names with / (like feature/branch-name)
     if [[ "$OSTYPE" == "darwin"* ]]; then
-        sed -i '' "s/YOUR_ORG/${ORG_NAME}/g" .github/workflows/label-sync.yml
-        sed -i '' "s/- main/- ${DEFAULT_BRANCH}/g" .github/workflows/label-sync.yml
+        sed -i '' "s|YOUR_ORG|${ORG_NAME}|g" .github/workflows/label-sync.yml
+        sed -i '' "s|- main|- ${DEFAULT_BRANCH}|g" .github/workflows/label-sync.yml
     else
-        sed -i "s/YOUR_ORG/${ORG_NAME}/g" .github/workflows/label-sync.yml
-        sed -i "s/- main/- ${DEFAULT_BRANCH}/g" .github/workflows/label-sync.yml
+        sed -i "s|YOUR_ORG|${ORG_NAME}|g" .github/workflows/label-sync.yml
+        sed -i "s|- main|- ${DEFAULT_BRANCH}|g" .github/workflows/label-sync.yml
     fi
     echo -e "${GREEN}✓${NC} Downloaded .github/workflows/label-sync.yml"
 else
@@ -78,12 +79,13 @@ fi
 echo -e "${YELLOW}[3/5]${NC} Downloading shopify-theme-ci workflow..."
 if curl -sSL "${BASE_URL}/templates/caller-examples/shopify-theme-ci-caller.yml" -o .github/workflows/shopify-theme-ci.yml; then
     # Replace YOUR_ORG with actual org name and main with default branch
+    # Use | as delimiter to handle branch names with / (like feature/branch-name)
     if [[ "$OSTYPE" == "darwin"* ]]; then
-        sed -i '' "s/YOUR_ORG/${ORG_NAME}/g" .github/workflows/shopify-theme-ci.yml
-        sed -i '' "s/- main/- ${DEFAULT_BRANCH}/g" .github/workflows/shopify-theme-ci.yml
+        sed -i '' "s|YOUR_ORG|${ORG_NAME}|g" .github/workflows/shopify-theme-ci.yml
+        sed -i '' "s|- main|- ${DEFAULT_BRANCH}|g" .github/workflows/shopify-theme-ci.yml
     else
-        sed -i "s/YOUR_ORG/${ORG_NAME}/g" .github/workflows/shopify-theme-ci.yml
-        sed -i "s/- main/- ${DEFAULT_BRANCH}/g" .github/workflows/shopify-theme-ci.yml
+        sed -i "s|YOUR_ORG|${ORG_NAME}|g" .github/workflows/shopify-theme-ci.yml
+        sed -i "s|- main|- ${DEFAULT_BRANCH}|g" .github/workflows/shopify-theme-ci.yml
     fi
     echo -e "${GREEN}✓${NC} Downloaded .github/workflows/shopify-theme-ci.yml"
 else
