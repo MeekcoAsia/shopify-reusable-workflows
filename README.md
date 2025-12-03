@@ -65,8 +65,6 @@ make commit-workflows
 git push
 ```
 
-See [ONE_LINE_SETUP.md](ONE_LINE_SETUP.md) for more options.
-
 ---
 
 ## Updating Workflows
