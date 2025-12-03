@@ -34,7 +34,7 @@ jobs:
   auto-label:
     name: Auto Label PR
     runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request' && github.event.action == 'opened'
+    if: github.event_name == 'pull_request'
 
     steps:
       - name: Label PR based on branch type
@@ -44,23 +44,32 @@ jobs:
           script: |
             const branchName = context.payload.pull_request.head.ref;
             const branchType = branchName.split('/')[0];
-            const labels = [];
+            const labelsToAdd = [];
 
-            // Add type label based on branch prefix
+            // Determine which label to add based on branch prefix
             if (branchType === 'feature' || branchType === 'feat') {
-              labels.push('feature');
+              labelsToAdd.push('feature');
             } else if (branchType === 'fix' || branchType === 'hotfix') {
-              labels.push('bug');
+              labelsToAdd.push('bug');
             }
 
-            // Add labels to PR
-            if (labels.length > 0) {
+            // Get existing labels on PR
+            const existingLabels = context.payload.pull_request.labels.map(l => l.name);
+
+            // Filter out labels that already exist
+            const newLabels = labelsToAdd.filter(label => !existingLabels.includes(label));
+
+            // Add labels only if they don't already exist
+            if (newLabels.length > 0) {
               await github.rest.issues.addLabels({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 issue_number: context.issue.number,
-                labels: labels
+                labels: newLabels
               });
+              console.log(`Added labels: ${newLabels.join(', ')}`);
+            } else {
+              console.log('Labels already exist, skipping');
             }
 
   # Validate theme files
@@ -123,11 +132,11 @@ jobs:
       - name: Run Theme Check
         run: theme-check .
 
-  # Auto-add "ready to test" label when PR is opened
+  # Auto-add "ready to test" label when checks pass
   add-ready-to-test:
     name: Add Ready to Test Label
     runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request' && github.event.action == 'opened'
+    if: github.event_name == 'pull_request'
     needs: [validate, theme-check]
 
     steps:
@@ -136,43 +145,69 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            await github.rest.issues.addLabels({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: context.issue.number,
-              labels: ['ready to test']
-            });
+            // Get existing labels on PR
+            const existingLabels = context.payload.pull_request.labels.map(l => l.name);
+
+            // Only add label if it doesn't already exist
+            if (!existingLabels.includes('ready to test')) {
+              await github.rest.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                labels: ['ready to test']
+              });
+              console.log('Added "ready to test" label');
+            } else {
+              console.log('"ready to test" label already exists, skipping');
+            }
 
       - name: Comment PR with info
         uses: actions/github-script@v7
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const branchName = context.payload.pull_request.head.ref;
-            const branchType = branchName.split('/')[0];
-            const issueNumber = branchName.match(/\/(\d+)-/)?.[1] || 'N/A';
-
-            let body = `**PR is ready for testing**\n\n`;
-            body += `**Branch:** \`${branchName}\`\n`;
-            body += `**Type:** \`${branchType}\`\n`;
-            if (issueNumber !== 'N/A') {
-              body += `**Linked Issue:** #${issueNumber}\n`;
-            }
-            body += `\n---\n`;
-            body += `**Next Steps:**\n`;
-            body += `1. Validation and theme check passed\n`;
-            body += `2. Shopify preview theme is auto-synced with this branch\n`;
-            body += `3. PM: Test on the Shopify preview theme connected to this branch\n`;
-            body += `   (Preview theme link should be in the PR description)\n`;
-            body += `4. PM: Add "ready to main" label when approved\n`;
-            body += `5. Merge to main will auto-deploy to production via Shopify GitHub integration`;
-
-            await github.rest.issues.createComment({
-              issue_number: context.issue.number,
+            // Check if we already commented (look for our signature comment)
+            const comments = await github.rest.issues.listComments({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: body
+              issue_number: context.issue.number
             });
+
+            const botComment = comments.data.find(comment =>
+              comment.body.includes('**PR is ready for testing**')
+            );
+
+            // Only comment if we haven't already
+            if (!botComment) {
+              const branchName = context.payload.pull_request.head.ref;
+              const branchType = branchName.split('/')[0];
+              const issueNumber = branchName.match(/\/(\d+)-/)?.[1] || 'N/A';
+
+              let body = `**PR is ready for testing**\n\n`;
+              body += `**Branch:** \`${branchName}\`\n`;
+              body += `**Type:** \`${branchType}\`\n`;
+              if (issueNumber !== 'N/A') {
+                body += `**Linked Issue:** #${issueNumber}\n`;
+              }
+              body += `\n---\n`;
+              body += `**Next Steps:**\n`;
+              body += `1. Validation and theme check passed\n`;
+              body += `2. Shopify preview theme is auto-synced with this branch\n`;
+              body += `3. PM: Test on the Shopify preview theme connected to this branch\n`;
+              body += `   (Preview theme link should be in the PR description)\n`;
+              body += `4. PM: Add "ready to main" label when approved\n`;
+              body += `5. Merge to main will auto-deploy to production via Shopify GitHub integration`;
+
+              await github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: body
+              });
+              console.log('Added PR comment');
+            } else {
+              console.log('Comment already exists, skipping');
+            }
 
   # Enforce "ready to main" label before allowing merge
   check-ready-to-main:
